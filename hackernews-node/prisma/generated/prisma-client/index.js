@@ -13,8 +13,12 @@ var models = [
     embedded: false
   },
   {
+    name: "Photo",
+    embedded: false
+  },
+  {
     name: "Comment",
-    embedded: true
+    embedded: false
   }
 ];
 exports.Prisma = prisma_lib_1.makePrismaClientClass({

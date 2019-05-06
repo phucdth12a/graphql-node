@@ -3,7 +3,15 @@ module.exports = {
   // Please don't change this file manually but run `prisma generate` to update it.
   // For more information, please read the docs: https://www.prisma.io/docs/prisma-client/
 
-/* GraphQL */ `type AggregatePost {
+/* GraphQL */ `type AggregateComment {
+  count: Int!
+}
+
+type AggregatePhoto {
+  count: Int!
+}
+
+type AggregatePost {
   count: Int!
 }
 
@@ -16,89 +24,128 @@ type BatchPayload {
 }
 
 type Comment {
-  text: String!
-  writtenBy: User!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  message: String!
+  post: Post!
+  user: User!
+}
+
+type CommentConnection {
+  pageInfo: PageInfo!
+  edges: [CommentEdge]!
+  aggregate: AggregateComment!
 }
 
 input CommentCreateInput {
-  text: String!
-  writtenBy: UserCreateOneInput!
+  id: ID
+  message: String!
+  post: PostCreateOneInput!
+  user: UserCreateOneInput!
 }
 
-input CommentCreateManyInput {
-  create: [CommentCreateInput!]
+type CommentEdge {
+  node: Comment!
+  cursor: String!
 }
 
-input CommentRestrictedWhereInput {
-  text: String
-  text_not: String
-  text_in: [String!]
-  text_not_in: [String!]
-  text_lt: String
-  text_lte: String
-  text_gt: String
-  text_gte: String
-  text_contains: String
-  text_not_contains: String
-  text_starts_with: String
-  text_not_starts_with: String
-  text_ends_with: String
-  text_not_ends_with: String
-  AND: [CommentRestrictedWhereInput!]
+enum CommentOrderByInput {
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  message_ASC
+  message_DESC
 }
 
-input CommentScalarWhereInput {
-  text: String
-  text_not: String
-  text_in: [String!]
-  text_not_in: [String!]
-  text_lt: String
-  text_lte: String
-  text_gt: String
-  text_gte: String
-  text_contains: String
-  text_not_contains: String
-  text_starts_with: String
-  text_not_starts_with: String
-  text_ends_with: String
-  text_not_ends_with: String
-  AND: [CommentScalarWhereInput!]
-  OR: [CommentScalarWhereInput!]
-  NOT: [CommentScalarWhereInput!]
+type CommentPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  message: String!
 }
 
-input CommentUpdateManyDataInput {
-  text: String
+type CommentSubscriptionPayload {
+  mutation: MutationType!
+  node: Comment
+  updatedFields: [String!]
+  previousValues: CommentPreviousValues
 }
 
-input CommentUpdateManyInput {
-  create: [CommentCreateInput!]
-  deleteMany: [CommentScalarWhereInput!]
-  updateMany: [CommentUpdateManyWithWhereNestedInput!]
+input CommentSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: CommentWhereInput
+  AND: [CommentSubscriptionWhereInput!]
 }
 
-input CommentUpdateManyWithWhereNestedInput {
-  where: CommentScalarWhereInput!
-  data: CommentUpdateManyDataInput!
+input CommentUpdateInput {
+  message: String
+  post: PostUpdateOneRequiredInput
+  user: UserUpdateOneRequiredInput
+}
+
+input CommentUpdateManyMutationInput {
+  message: String
 }
 
 input CommentWhereInput {
-  text: String
-  text_not: String
-  text_in: [String!]
-  text_not_in: [String!]
-  text_lt: String
-  text_lte: String
-  text_gt: String
-  text_gte: String
-  text_contains: String
-  text_not_contains: String
-  text_starts_with: String
-  text_not_starts_with: String
-  text_ends_with: String
-  text_not_ends_with: String
-  writtenBy: UserWhereInput
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  message: String
+  message_not: String
+  message_in: [String!]
+  message_not_in: [String!]
+  message_lt: String
+  message_lte: String
+  message_gt: String
+  message_gte: String
+  message_contains: String
+  message_not_contains: String
+  message_starts_with: String
+  message_not_starts_with: String
+  message_ends_with: String
+  message_not_ends_with: String
+  post: PostWhereInput
+  user: UserWhereInput
   AND: [CommentWhereInput!]
+}
+
+input CommentWhereUniqueInput {
+  id: ID
 }
 
 scalar DateTime
@@ -106,6 +153,18 @@ scalar DateTime
 scalar Long
 
 type Mutation {
+  createComment(data: CommentCreateInput!): Comment!
+  updateComment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): Comment
+  updateManyComments(data: CommentUpdateManyMutationInput!, where: CommentWhereInput): BatchPayload!
+  upsertComment(where: CommentWhereUniqueInput!, create: CommentCreateInput!, update: CommentUpdateInput!): Comment!
+  deleteComment(where: CommentWhereUniqueInput!): Comment
+  deleteManyComments(where: CommentWhereInput): BatchPayload!
+  createPhoto(data: PhotoCreateInput!): Photo!
+  updatePhoto(data: PhotoUpdateInput!, where: PhotoWhereUniqueInput!): Photo
+  updateManyPhotos(data: PhotoUpdateManyMutationInput!, where: PhotoWhereInput): BatchPayload!
+  upsertPhoto(where: PhotoWhereUniqueInput!, create: PhotoCreateInput!, update: PhotoUpdateInput!): Photo!
+  deletePhoto(where: PhotoWhereUniqueInput!): Photo
+  deleteManyPhotos(where: PhotoWhereInput): BatchPayload!
   createPost(data: PostCreateInput!): Post!
   updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
   updateManyPosts(data: PostUpdateManyMutationInput!, where: PostWhereInput): BatchPayload!
@@ -137,14 +196,309 @@ type PageInfo {
   endCursor: String
 }
 
+type Photo {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  height: Int!
+  width: Int!
+  url: String!
+  user: User!
+}
+
+type PhotoConnection {
+  pageInfo: PageInfo!
+  edges: [PhotoEdge]!
+  aggregate: AggregatePhoto!
+}
+
+input PhotoCreateInput {
+  id: ID
+  height: Int!
+  width: Int!
+  url: String!
+  user: UserCreateOneWithoutPhotosInput!
+}
+
+input PhotoCreateManyWithoutUserInput {
+  create: [PhotoCreateWithoutUserInput!]
+  connect: [PhotoWhereUniqueInput!]
+}
+
+input PhotoCreateOneInput {
+  create: PhotoCreateInput
+  connect: PhotoWhereUniqueInput
+}
+
+input PhotoCreateWithoutUserInput {
+  id: ID
+  height: Int!
+  width: Int!
+  url: String!
+}
+
+type PhotoEdge {
+  node: Photo!
+  cursor: String!
+}
+
+enum PhotoOrderByInput {
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  height_ASC
+  height_DESC
+  width_ASC
+  width_DESC
+  url_ASC
+  url_DESC
+}
+
+type PhotoPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  height: Int!
+  width: Int!
+  url: String!
+}
+
+input PhotoScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  height: Int
+  height_not: Int
+  height_in: [Int!]
+  height_not_in: [Int!]
+  height_lt: Int
+  height_lte: Int
+  height_gt: Int
+  height_gte: Int
+  width: Int
+  width_not: Int
+  width_in: [Int!]
+  width_not_in: [Int!]
+  width_lt: Int
+  width_lte: Int
+  width_gt: Int
+  width_gte: Int
+  url: String
+  url_not: String
+  url_in: [String!]
+  url_not_in: [String!]
+  url_lt: String
+  url_lte: String
+  url_gt: String
+  url_gte: String
+  url_contains: String
+  url_not_contains: String
+  url_starts_with: String
+  url_not_starts_with: String
+  url_ends_with: String
+  url_not_ends_with: String
+  AND: [PhotoScalarWhereInput!]
+  OR: [PhotoScalarWhereInput!]
+  NOT: [PhotoScalarWhereInput!]
+}
+
+type PhotoSubscriptionPayload {
+  mutation: MutationType!
+  node: Photo
+  updatedFields: [String!]
+  previousValues: PhotoPreviousValues
+}
+
+input PhotoSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: PhotoWhereInput
+  AND: [PhotoSubscriptionWhereInput!]
+}
+
+input PhotoUpdateDataInput {
+  height: Int
+  width: Int
+  url: String
+  user: UserUpdateOneRequiredWithoutPhotosInput
+}
+
+input PhotoUpdateInput {
+  height: Int
+  width: Int
+  url: String
+  user: UserUpdateOneRequiredWithoutPhotosInput
+}
+
+input PhotoUpdateManyDataInput {
+  height: Int
+  width: Int
+  url: String
+}
+
+input PhotoUpdateManyMutationInput {
+  height: Int
+  width: Int
+  url: String
+}
+
+input PhotoUpdateManyWithoutUserInput {
+  create: [PhotoCreateWithoutUserInput!]
+  delete: [PhotoWhereUniqueInput!]
+  connect: [PhotoWhereUniqueInput!]
+  set: [PhotoWhereUniqueInput!]
+  disconnect: [PhotoWhereUniqueInput!]
+  update: [PhotoUpdateWithWhereUniqueWithoutUserInput!]
+  upsert: [PhotoUpsertWithWhereUniqueWithoutUserInput!]
+  deleteMany: [PhotoScalarWhereInput!]
+  updateMany: [PhotoUpdateManyWithWhereNestedInput!]
+}
+
+input PhotoUpdateManyWithWhereNestedInput {
+  where: PhotoScalarWhereInput!
+  data: PhotoUpdateManyDataInput!
+}
+
+input PhotoUpdateOneRequiredInput {
+  create: PhotoCreateInput
+  update: PhotoUpdateDataInput
+  upsert: PhotoUpsertNestedInput
+  connect: PhotoWhereUniqueInput
+}
+
+input PhotoUpdateWithoutUserDataInput {
+  height: Int
+  width: Int
+  url: String
+}
+
+input PhotoUpdateWithWhereUniqueWithoutUserInput {
+  where: PhotoWhereUniqueInput!
+  data: PhotoUpdateWithoutUserDataInput!
+}
+
+input PhotoUpsertNestedInput {
+  update: PhotoUpdateDataInput!
+  create: PhotoCreateInput!
+}
+
+input PhotoUpsertWithWhereUniqueWithoutUserInput {
+  where: PhotoWhereUniqueInput!
+  update: PhotoUpdateWithoutUserDataInput!
+  create: PhotoCreateWithoutUserInput!
+}
+
+input PhotoWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  height: Int
+  height_not: Int
+  height_in: [Int!]
+  height_not_in: [Int!]
+  height_lt: Int
+  height_lte: Int
+  height_gt: Int
+  height_gte: Int
+  width: Int
+  width_not: Int
+  width_in: [Int!]
+  width_not_in: [Int!]
+  width_lt: Int
+  width_lte: Int
+  width_gt: Int
+  width_gte: Int
+  url: String
+  url_not: String
+  url_in: [String!]
+  url_not_in: [String!]
+  url_lt: String
+  url_lte: String
+  url_gt: String
+  url_gte: String
+  url_contains: String
+  url_not_contains: String
+  url_starts_with: String
+  url_not_starts_with: String
+  url_ends_with: String
+  url_not_ends_with: String
+  user: UserWhereInput
+  AND: [PhotoWhereInput!]
+}
+
+input PhotoWhereUniqueInput {
+  id: ID
+}
+
 type Post {
   id: ID!
-  wasCreated: DateTime!
-  wasUpdated: DateTime!
-  title: String!
-  published: Boolean
-  author: User!
-  comments: [Comment!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  comment_count: Int
+  likes_count: Int
+  message: String!
+  photo: Photo!
+  user: User!
+  likes(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
 }
 
 type PostConnection {
@@ -155,22 +509,31 @@ type PostConnection {
 
 input PostCreateInput {
   id: ID
-  title: String!
-  published: Boolean
-  author: UserCreateOneWithoutPostsInput!
-  comments: CommentCreateManyInput
+  comment_count: Int
+  likes_count: Int
+  message: String!
+  photo: PhotoCreateOneInput!
+  user: UserCreateOneWithoutPostsInput!
+  likes: UserCreateManyInput
 }
 
-input PostCreateManyWithoutAuthorInput {
-  create: [PostCreateWithoutAuthorInput!]
+input PostCreateManyWithoutUserInput {
+  create: [PostCreateWithoutUserInput!]
   connect: [PostWhereUniqueInput!]
 }
 
-input PostCreateWithoutAuthorInput {
+input PostCreateOneInput {
+  create: PostCreateInput
+  connect: PostWhereUniqueInput
+}
+
+input PostCreateWithoutUserInput {
   id: ID
-  title: String!
-  published: Boolean
-  comments: CommentCreateManyInput
+  comment_count: Int
+  likes_count: Int
+  message: String!
+  photo: PhotoCreateOneInput!
+  likes: UserCreateManyInput
 }
 
 type PostEdge {
@@ -181,22 +544,25 @@ type PostEdge {
 enum PostOrderByInput {
   id_ASC
   id_DESC
-  wasCreated_ASC
-  wasCreated_DESC
-  wasUpdated_ASC
-  wasUpdated_DESC
-  title_ASC
-  title_DESC
-  published_ASC
-  published_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  comment_count_ASC
+  comment_count_DESC
+  likes_count_ASC
+  likes_count_DESC
+  message_ASC
+  message_DESC
 }
 
 type PostPreviousValues {
   id: ID!
-  wasCreated: DateTime!
-  wasUpdated: DateTime!
-  title: String!
-  published: Boolean
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  comment_count: Int
+  likes_count: Int
+  message: String!
 }
 
 input PostScalarWhereInput {
@@ -214,38 +580,52 @@ input PostScalarWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
-  wasCreated: DateTime
-  wasCreated_not: DateTime
-  wasCreated_in: [DateTime!]
-  wasCreated_not_in: [DateTime!]
-  wasCreated_lt: DateTime
-  wasCreated_lte: DateTime
-  wasCreated_gt: DateTime
-  wasCreated_gte: DateTime
-  wasUpdated: DateTime
-  wasUpdated_not: DateTime
-  wasUpdated_in: [DateTime!]
-  wasUpdated_not_in: [DateTime!]
-  wasUpdated_lt: DateTime
-  wasUpdated_lte: DateTime
-  wasUpdated_gt: DateTime
-  wasUpdated_gte: DateTime
-  title: String
-  title_not: String
-  title_in: [String!]
-  title_not_in: [String!]
-  title_lt: String
-  title_lte: String
-  title_gt: String
-  title_gte: String
-  title_contains: String
-  title_not_contains: String
-  title_starts_with: String
-  title_not_starts_with: String
-  title_ends_with: String
-  title_not_ends_with: String
-  published: Boolean
-  published_not: Boolean
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  comment_count: Int
+  comment_count_not: Int
+  comment_count_in: [Int!]
+  comment_count_not_in: [Int!]
+  comment_count_lt: Int
+  comment_count_lte: Int
+  comment_count_gt: Int
+  comment_count_gte: Int
+  likes_count: Int
+  likes_count_not: Int
+  likes_count_in: [Int!]
+  likes_count_not_in: [Int!]
+  likes_count_lt: Int
+  likes_count_lte: Int
+  likes_count_gt: Int
+  likes_count_gte: Int
+  message: String
+  message_not: String
+  message_in: [String!]
+  message_not_in: [String!]
+  message_lt: String
+  message_lte: String
+  message_gt: String
+  message_gte: String
+  message_contains: String
+  message_not_contains: String
+  message_starts_with: String
+  message_not_starts_with: String
+  message_ends_with: String
+  message_not_ends_with: String
   AND: [PostScalarWhereInput!]
   OR: [PostScalarWhereInput!]
   NOT: [PostScalarWhereInput!]
@@ -267,31 +647,44 @@ input PostSubscriptionWhereInput {
   AND: [PostSubscriptionWhereInput!]
 }
 
+input PostUpdateDataInput {
+  comment_count: Int
+  likes_count: Int
+  message: String
+  photo: PhotoUpdateOneRequiredInput
+  user: UserUpdateOneRequiredWithoutPostsInput
+  likes: UserUpdateManyInput
+}
+
 input PostUpdateInput {
-  title: String
-  published: Boolean
-  author: UserUpdateOneRequiredWithoutPostsInput
-  comments: CommentUpdateManyInput
+  comment_count: Int
+  likes_count: Int
+  message: String
+  photo: PhotoUpdateOneRequiredInput
+  user: UserUpdateOneRequiredWithoutPostsInput
+  likes: UserUpdateManyInput
 }
 
 input PostUpdateManyDataInput {
-  title: String
-  published: Boolean
+  comment_count: Int
+  likes_count: Int
+  message: String
 }
 
 input PostUpdateManyMutationInput {
-  title: String
-  published: Boolean
+  comment_count: Int
+  likes_count: Int
+  message: String
 }
 
-input PostUpdateManyWithoutAuthorInput {
-  create: [PostCreateWithoutAuthorInput!]
+input PostUpdateManyWithoutUserInput {
+  create: [PostCreateWithoutUserInput!]
   delete: [PostWhereUniqueInput!]
   connect: [PostWhereUniqueInput!]
   set: [PostWhereUniqueInput!]
   disconnect: [PostWhereUniqueInput!]
-  update: [PostUpdateWithWhereUniqueWithoutAuthorInput!]
-  upsert: [PostUpsertWithWhereUniqueWithoutAuthorInput!]
+  update: [PostUpdateWithWhereUniqueWithoutUserInput!]
+  upsert: [PostUpsertWithWhereUniqueWithoutUserInput!]
   deleteMany: [PostScalarWhereInput!]
   updateMany: [PostUpdateManyWithWhereNestedInput!]
 }
@@ -301,21 +694,35 @@ input PostUpdateManyWithWhereNestedInput {
   data: PostUpdateManyDataInput!
 }
 
-input PostUpdateWithoutAuthorDataInput {
-  title: String
-  published: Boolean
-  comments: CommentUpdateManyInput
+input PostUpdateOneRequiredInput {
+  create: PostCreateInput
+  update: PostUpdateDataInput
+  upsert: PostUpsertNestedInput
+  connect: PostWhereUniqueInput
 }
 
-input PostUpdateWithWhereUniqueWithoutAuthorInput {
-  where: PostWhereUniqueInput!
-  data: PostUpdateWithoutAuthorDataInput!
+input PostUpdateWithoutUserDataInput {
+  comment_count: Int
+  likes_count: Int
+  message: String
+  photo: PhotoUpdateOneRequiredInput
+  likes: UserUpdateManyInput
 }
 
-input PostUpsertWithWhereUniqueWithoutAuthorInput {
+input PostUpdateWithWhereUniqueWithoutUserInput {
   where: PostWhereUniqueInput!
-  update: PostUpdateWithoutAuthorDataInput!
-  create: PostCreateWithoutAuthorInput!
+  data: PostUpdateWithoutUserDataInput!
+}
+
+input PostUpsertNestedInput {
+  update: PostUpdateDataInput!
+  create: PostCreateInput!
+}
+
+input PostUpsertWithWhereUniqueWithoutUserInput {
+  where: PostWhereUniqueInput!
+  update: PostUpdateWithoutUserDataInput!
+  create: PostCreateWithoutUserInput!
 }
 
 input PostWhereInput {
@@ -333,42 +740,55 @@ input PostWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
-  wasCreated: DateTime
-  wasCreated_not: DateTime
-  wasCreated_in: [DateTime!]
-  wasCreated_not_in: [DateTime!]
-  wasCreated_lt: DateTime
-  wasCreated_lte: DateTime
-  wasCreated_gt: DateTime
-  wasCreated_gte: DateTime
-  wasUpdated: DateTime
-  wasUpdated_not: DateTime
-  wasUpdated_in: [DateTime!]
-  wasUpdated_not_in: [DateTime!]
-  wasUpdated_lt: DateTime
-  wasUpdated_lte: DateTime
-  wasUpdated_gt: DateTime
-  wasUpdated_gte: DateTime
-  title: String
-  title_not: String
-  title_in: [String!]
-  title_not_in: [String!]
-  title_lt: String
-  title_lte: String
-  title_gt: String
-  title_gte: String
-  title_contains: String
-  title_not_contains: String
-  title_starts_with: String
-  title_not_starts_with: String
-  title_ends_with: String
-  title_not_ends_with: String
-  published: Boolean
-  published_not: Boolean
-  author: UserWhereInput
-  comments_some: CommentWhereInput
-  comments_every: CommentRestrictedWhereInput
-  comments_none: CommentRestrictedWhereInput
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  comment_count: Int
+  comment_count_not: Int
+  comment_count_in: [Int!]
+  comment_count_not_in: [Int!]
+  comment_count_lt: Int
+  comment_count_lte: Int
+  comment_count_gt: Int
+  comment_count_gte: Int
+  likes_count: Int
+  likes_count_not: Int
+  likes_count_in: [Int!]
+  likes_count_not_in: [Int!]
+  likes_count_lt: Int
+  likes_count_lte: Int
+  likes_count_gt: Int
+  likes_count_gte: Int
+  message: String
+  message_not: String
+  message_in: [String!]
+  message_not_in: [String!]
+  message_lt: String
+  message_lte: String
+  message_gt: String
+  message_gte: String
+  message_contains: String
+  message_not_contains: String
+  message_starts_with: String
+  message_not_starts_with: String
+  message_ends_with: String
+  message_not_ends_with: String
+  photo: PhotoWhereInput
+  user: UserWhereInput
+  likes_some: UserWhereInput
   AND: [PostWhereInput!]
 }
 
@@ -377,6 +797,12 @@ input PostWhereUniqueInput {
 }
 
 type Query {
+  comment(where: CommentWhereUniqueInput!): Comment
+  comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment]!
+  commentsConnection(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CommentConnection!
+  photo(where: PhotoWhereUniqueInput!): Photo
+  photos(where: PhotoWhereInput, orderBy: PhotoOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Photo]!
+  photosConnection(where: PhotoWhereInput, orderBy: PhotoOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PhotoConnection!
   post(where: PostWhereUniqueInput!): Post
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
   postsConnection(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PostConnection!
@@ -387,15 +813,25 @@ type Query {
 }
 
 type Subscription {
+  comment(where: CommentSubscriptionWhereInput): CommentSubscriptionPayload
+  photo(where: PhotoSubscriptionWhereInput): PhotoSubscriptionPayload
   post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
 
 type User {
   id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  firstname: String!
+  lastname: String!
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
   email: String!
-  name: String!
   password: String!
+  photos(where: PhotoWhereInput, orderBy: PhotoOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Photo!]
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
 }
 
@@ -407,14 +843,30 @@ type UserConnection {
 
 input UserCreateInput {
   id: ID
+  firstname: String!
+  lastname: String!
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
   email: String!
-  name: String!
   password: String!
-  posts: PostCreateManyWithoutAuthorInput
+  photos: PhotoCreateManyWithoutUserInput
+  posts: PostCreateManyWithoutUserInput
+}
+
+input UserCreateManyInput {
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
 }
 
 input UserCreateOneInput {
   create: UserCreateInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutPhotosInput {
+  create: UserCreateWithoutPhotosInput
   connect: UserWhereUniqueInput
 }
 
@@ -423,11 +875,30 @@ input UserCreateOneWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreateWithoutPhotosInput {
+  id: ID
+  firstname: String!
+  lastname: String!
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
+  email: String!
+  password: String!
+  posts: PostCreateManyWithoutUserInput
+}
+
 input UserCreateWithoutPostsInput {
   id: ID
+  firstname: String!
+  lastname: String!
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
   email: String!
-  name: String!
   password: String!
+  photos: PhotoCreateManyWithoutUserInput
 }
 
 type UserEdge {
@@ -438,19 +909,170 @@ type UserEdge {
 enum UserOrderByInput {
   id_ASC
   id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  firstname_ASC
+  firstname_DESC
+  lastname_ASC
+  lastname_DESC
+  bio_ASC
+  bio_DESC
+  follower_count_ASC
+  follower_count_DESC
+  following_count_ASC
+  following_count_DESC
+  post_count_ASC
+  post_count_DESC
   email_ASC
   email_DESC
-  name_ASC
-  name_DESC
   password_ASC
   password_DESC
 }
 
 type UserPreviousValues {
   id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  firstname: String!
+  lastname: String!
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
   email: String!
-  name: String!
   password: String!
+}
+
+input UserScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  firstname: String
+  firstname_not: String
+  firstname_in: [String!]
+  firstname_not_in: [String!]
+  firstname_lt: String
+  firstname_lte: String
+  firstname_gt: String
+  firstname_gte: String
+  firstname_contains: String
+  firstname_not_contains: String
+  firstname_starts_with: String
+  firstname_not_starts_with: String
+  firstname_ends_with: String
+  firstname_not_ends_with: String
+  lastname: String
+  lastname_not: String
+  lastname_in: [String!]
+  lastname_not_in: [String!]
+  lastname_lt: String
+  lastname_lte: String
+  lastname_gt: String
+  lastname_gte: String
+  lastname_contains: String
+  lastname_not_contains: String
+  lastname_starts_with: String
+  lastname_not_starts_with: String
+  lastname_ends_with: String
+  lastname_not_ends_with: String
+  bio: String
+  bio_not: String
+  bio_in: [String!]
+  bio_not_in: [String!]
+  bio_lt: String
+  bio_lte: String
+  bio_gt: String
+  bio_gte: String
+  bio_contains: String
+  bio_not_contains: String
+  bio_starts_with: String
+  bio_not_starts_with: String
+  bio_ends_with: String
+  bio_not_ends_with: String
+  follower_count: Int
+  follower_count_not: Int
+  follower_count_in: [Int!]
+  follower_count_not_in: [Int!]
+  follower_count_lt: Int
+  follower_count_lte: Int
+  follower_count_gt: Int
+  follower_count_gte: Int
+  following_count: Int
+  following_count_not: Int
+  following_count_in: [Int!]
+  following_count_not_in: [Int!]
+  following_count_lt: Int
+  following_count_lte: Int
+  following_count_gt: Int
+  following_count_gte: Int
+  post_count: Int
+  post_count_not: Int
+  post_count_in: [Int!]
+  post_count_not_in: [Int!]
+  post_count_lt: Int
+  post_count_lte: Int
+  post_count_gt: Int
+  post_count_gte: Int
+  email: String
+  email_not: String
+  email_in: [String!]
+  email_not_in: [String!]
+  email_lt: String
+  email_lte: String
+  email_gt: String
+  email_gte: String
+  email_contains: String
+  email_not_contains: String
+  email_starts_with: String
+  email_not_starts_with: String
+  email_ends_with: String
+  email_not_ends_with: String
+  password: String
+  password_not: String
+  password_in: [String!]
+  password_not_in: [String!]
+  password_lt: String
+  password_lte: String
+  password_gt: String
+  password_gte: String
+  password_contains: String
+  password_not_contains: String
+  password_starts_with: String
+  password_not_starts_with: String
+  password_ends_with: String
+  password_not_ends_with: String
+  AND: [UserScalarWhereInput!]
+  OR: [UserScalarWhereInput!]
+  NOT: [UserScalarWhereInput!]
 }
 
 type UserSubscriptionPayload {
@@ -469,17 +1091,83 @@ input UserSubscriptionWhereInput {
   AND: [UserSubscriptionWhereInput!]
 }
 
-input UserUpdateInput {
+input UserUpdateDataInput {
+  firstname: String
+  lastname: String
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
   email: String
-  name: String
   password: String
-  posts: PostUpdateManyWithoutAuthorInput
+  photos: PhotoUpdateManyWithoutUserInput
+  posts: PostUpdateManyWithoutUserInput
+}
+
+input UserUpdateInput {
+  firstname: String
+  lastname: String
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
+  email: String
+  password: String
+  photos: PhotoUpdateManyWithoutUserInput
+  posts: PostUpdateManyWithoutUserInput
+}
+
+input UserUpdateManyDataInput {
+  firstname: String
+  lastname: String
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
+  email: String
+  password: String
+}
+
+input UserUpdateManyInput {
+  create: [UserCreateInput!]
+  update: [UserUpdateWithWhereUniqueNestedInput!]
+  upsert: [UserUpsertWithWhereUniqueNestedInput!]
+  delete: [UserWhereUniqueInput!]
+  connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  deleteMany: [UserScalarWhereInput!]
+  updateMany: [UserUpdateManyWithWhereNestedInput!]
 }
 
 input UserUpdateManyMutationInput {
+  firstname: String
+  lastname: String
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
   email: String
-  name: String
   password: String
+}
+
+input UserUpdateManyWithWhereNestedInput {
+  where: UserScalarWhereInput!
+  data: UserUpdateManyDataInput!
+}
+
+input UserUpdateOneRequiredInput {
+  create: UserCreateInput
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
+  connect: UserWhereUniqueInput
+}
+
+input UserUpdateOneRequiredWithoutPhotosInput {
+  create: UserCreateWithoutPhotosInput
+  update: UserUpdateWithoutPhotosDataInput
+  upsert: UserUpsertWithoutPhotosInput
+  connect: UserWhereUniqueInput
 }
 
 input UserUpdateOneRequiredWithoutPostsInput {
@@ -489,15 +1177,54 @@ input UserUpdateOneRequiredWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
-input UserUpdateWithoutPostsDataInput {
+input UserUpdateWithoutPhotosDataInput {
+  firstname: String
+  lastname: String
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
   email: String
-  name: String
   password: String
+  posts: PostUpdateManyWithoutUserInput
+}
+
+input UserUpdateWithoutPostsDataInput {
+  firstname: String
+  lastname: String
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
+  email: String
+  password: String
+  photos: PhotoUpdateManyWithoutUserInput
+}
+
+input UserUpdateWithWhereUniqueNestedInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateDataInput!
+}
+
+input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
+}
+
+input UserUpsertWithoutPhotosInput {
+  update: UserUpdateWithoutPhotosDataInput!
+  create: UserCreateWithoutPhotosInput!
 }
 
 input UserUpsertWithoutPostsInput {
   update: UserUpdateWithoutPostsDataInput!
   create: UserCreateWithoutPostsInput!
+}
+
+input UserUpsertWithWhereUniqueNestedInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
 }
 
 input UserWhereInput {
@@ -515,6 +1242,88 @@ input UserWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
+  createdAt: DateTime
+  createdAt_not: DateTime
+  createdAt_in: [DateTime!]
+  createdAt_not_in: [DateTime!]
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  updatedAt_not: DateTime
+  updatedAt_in: [DateTime!]
+  updatedAt_not_in: [DateTime!]
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  firstname: String
+  firstname_not: String
+  firstname_in: [String!]
+  firstname_not_in: [String!]
+  firstname_lt: String
+  firstname_lte: String
+  firstname_gt: String
+  firstname_gte: String
+  firstname_contains: String
+  firstname_not_contains: String
+  firstname_starts_with: String
+  firstname_not_starts_with: String
+  firstname_ends_with: String
+  firstname_not_ends_with: String
+  lastname: String
+  lastname_not: String
+  lastname_in: [String!]
+  lastname_not_in: [String!]
+  lastname_lt: String
+  lastname_lte: String
+  lastname_gt: String
+  lastname_gte: String
+  lastname_contains: String
+  lastname_not_contains: String
+  lastname_starts_with: String
+  lastname_not_starts_with: String
+  lastname_ends_with: String
+  lastname_not_ends_with: String
+  bio: String
+  bio_not: String
+  bio_in: [String!]
+  bio_not_in: [String!]
+  bio_lt: String
+  bio_lte: String
+  bio_gt: String
+  bio_gte: String
+  bio_contains: String
+  bio_not_contains: String
+  bio_starts_with: String
+  bio_not_starts_with: String
+  bio_ends_with: String
+  bio_not_ends_with: String
+  follower_count: Int
+  follower_count_not: Int
+  follower_count_in: [Int!]
+  follower_count_not_in: [Int!]
+  follower_count_lt: Int
+  follower_count_lte: Int
+  follower_count_gt: Int
+  follower_count_gte: Int
+  following_count: Int
+  following_count_not: Int
+  following_count_in: [Int!]
+  following_count_not_in: [Int!]
+  following_count_lt: Int
+  following_count_lte: Int
+  following_count_gt: Int
+  following_count_gte: Int
+  post_count: Int
+  post_count_not: Int
+  post_count_in: [Int!]
+  post_count_not_in: [Int!]
+  post_count_lt: Int
+  post_count_lte: Int
+  post_count_gt: Int
+  post_count_gte: Int
   email: String
   email_not: String
   email_in: [String!]
@@ -529,20 +1338,6 @@ input UserWhereInput {
   email_not_starts_with: String
   email_ends_with: String
   email_not_ends_with: String
-  name: String
-  name_not: String
-  name_in: [String!]
-  name_not_in: [String!]
-  name_lt: String
-  name_lte: String
-  name_gt: String
-  name_gte: String
-  name_contains: String
-  name_not_contains: String
-  name_starts_with: String
-  name_not_starts_with: String
-  name_ends_with: String
-  name_not_ends_with: String
   password: String
   password_not: String
   password_in: [String!]
@@ -557,6 +1352,7 @@ input UserWhereInput {
   password_not_starts_with: String
   password_ends_with: String
   password_not_ends_with: String
+  photos_some: PhotoWhereInput
   posts_some: PostWhereInput
   AND: [UserWhereInput!]
 }

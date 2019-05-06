@@ -1,22 +1,46 @@
-type User @db(name: "user") {
+type User {
   id: ID! @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  firstname: String!
+  lastname: String!
+  bio: String
+  follower_count: Int
+  following_count: Int
+  post_count: Int
   email: String! @unique
-  name: String!
   password: String!
-  posts: [Post!]! @relation(link: INLINE)
+  photos: [Photo!]! @relation(link: INLINE)
+  posts: [Post!]! @relation(name: "PostByUser", link: INLINE)
 }
 
-type Post @db(name: "post") {
+type Post {
   id: ID! @id
-  wasCreated: DateTime! @createdAt
-  wasUpdated: DateTime! @updatedAt
-  title: String!
-  published: Boolean @default(value: false)
-  author: User!
-  comments: [Comment!]!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  comment_count: Int
+  likes_count: Int
+  message: String!
+  photo: Photo! @relation(link: INLINE)
+  user: User! @relation(name: "PostByUser")
+  likes: [User!]! @relation(name: "LikeOfUser", link: INLINE)
 }
 
-type Comment @embedded {
-  text: String!
-  writtenBy: User!
+type Photo {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  height: Int!
+  width: Int!
+  url: String!
+  user: User!
+}
+
+type Comment {
+  id: ID! @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  message: String!
+  post: Post! @relation(link: INLINE)
+  user: User! @relation(link: INLINE)
 }
